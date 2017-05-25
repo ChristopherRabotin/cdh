@@ -1,6 +1,7 @@
 syntax = "proto3";
 package cdh.telemetry;
-message TelemetryData {
+
+message TelemetryPoint {
   uint32 ID = 1;
   oneof data {
     bool bool_value = 2;
@@ -8,4 +9,10 @@ message TelemetryData {
     int32 int_value = 4;
     bytes bytes_value = 5;
   }
+  uint32 checksum = 6;
+}
+
+message TelemetryFrame {
+  uint32 timestamp = 1;
+  repeated TelemetryPoint TM = 2;
 }

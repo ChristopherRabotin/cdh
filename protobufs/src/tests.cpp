@@ -30,9 +30,15 @@ SCENARIO( "Do that thing with the thing", "[Tags]" ) {
 }
 
 SCENARIO( "Test the telemetry", "[bdd][cdh][telemetry]" ) {
-    cdh::telemetry::TelemetryData TMTest;
-    TMTest.set_id(0x01);
+    cdh::telemetry::TelemetryPoint TMTest;
+    TMTest.set_id(0x10);
     TMTest.set_bool_value(true);
+    cdh::telemetry::TelemetryFrame Frame;
+    cdh::telemetry::TelemetryPoint* tm0 = Frame.add_tm();
+    tm0 = &TMTest;
+    std::cout << "num TMs:" << Frame.tm_size() << std::endl;
+    std::cout << "Expected ID:" << TMTest.id() << std::endl;
+    std::cout << "ID of first TM:" << Frame.tm(0).id() << std::endl;
     GIVEN( "A new TM point" ) {
         // make stuff exist
         WHEN( "I set its ID to 0x01 and its bool value to `true`" ) {
