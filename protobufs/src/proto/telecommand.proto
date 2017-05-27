@@ -16,7 +16,7 @@ message Telecommand {
   uint32 checksum = 8;
 }
 
-message TelecommandFrame {
+message TCFrame {
   bytes signature = 1; // Signature of the sender.
   uint32 timestamp = 2; // Sending timestamp
   uint32 sequence_no = 3;
