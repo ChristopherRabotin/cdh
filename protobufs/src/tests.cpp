@@ -10,6 +10,7 @@
 #include "catch.hpp"
 
 #include "./proto/telemetry.pb.h"
+#include "cdh.hpp"
 
 inline bool itDoesThis(){ return true; }
 inline bool itDoesThat(){ return true; }
@@ -29,12 +30,16 @@ SCENARIO( "Do that thing with the thing", "[Tags]" ) {
     }
 }
 
+SCENARIO( "Test collect the telemetry", "[bdd][cdh][telemetry]" ) {
+  cdh::subsystems::collect_all_telemetry();
+}
+
 SCENARIO( "Test the telemetry", "[bdd][cdh][telemetry]" ) {
-    cdh::telemetry::TelemetryPoint TMTest;
+    cdh::telemetry::Telemetry TMTest;
     TMTest.set_id(0x10);
     TMTest.set_bool_value(true);
-    cdh::telemetry::TelemetryFrame Frame;
-    cdh::telemetry::TelemetryPoint* tm0 = Frame.add_tm();
+    cdh::telemetry::TMFrame Frame;
+    cdh::telemetry::Telemetry* tm0 = Frame.add_tm();
     tm0 = &TMTest;
     std::cout << "num TMs:" << Frame.tm_size() << std::endl;
     std::cout << "Expected ID:" << TMTest.id() << std::endl;

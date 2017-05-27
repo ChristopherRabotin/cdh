@@ -1,18 +1,20 @@
 syntax = "proto3";
 package cdh.telemetry;
 
-message TelemetryPoint {
-  uint32 ID = 1;
+message Telemetry {
+  uint32 ID = 1; // Should this have the subsystem ID? Maybe as an enum for ease of comparison?
   oneof data {
     bool bool_value = 2;
     double double_value = 3;
     int32 int_value = 4;
     bytes bytes_value = 5;
   }
-  uint32 checksum = 6;
+  uint32 timestamp = 6; // Computation timestamp, needed because collection for a full frame may be long
+  uint32 checksum = 7;
 }
 
-message TelemetryFrame {
-  uint32 timestamp = 1;
-  repeated TelemetryPoint TM = 2;
+message TMFrame {
+  uint32 timestamp = 1; // Sending timestamp
+  uint32 sequence_no = 2;
+  repeated Telemetry TM = 3;
 }
