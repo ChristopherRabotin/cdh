@@ -37,12 +37,5 @@ Subsystem getSubsystemFromID(int id) {
     return HMI;
   };
 };
-
-// bool imu::collect_telemetry(cdh::telemetry::TMFrame &frame) { return false;
-// };
-
-bool pwr::collect_telemetry(cdh::telemetry::TMFrame &frame) { return false; };
-
-bool hmi::collect_telemetry(cdh::telemetry::TMFrame &frame) { return false; };
 }
 }
