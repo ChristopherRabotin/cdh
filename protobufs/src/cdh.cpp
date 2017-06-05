@@ -17,7 +17,7 @@ cdh::telemetry::TMFrame collect_all_telemetry() {
   for (int i = 0; i < 3; ++i) {
     if (!funcs[i](frame)) {
       // TODO: A better error printing statement.
-      cout << "func call " << i << " (" << subsystemName(subsystemFromID(i))
+      cout << "func call " << i << " (" << subsystem_name(subsystem_from_ID(i))
            << ") returned FALSE" << endl;
     }
   }
@@ -35,7 +35,7 @@ cdh::telemetry::TMFrame collect_all_telemetry() {
   return frame;
 };
 
-inline std::string subsystemName(const Subsystem sys) {
+std::string subsystem_name(const Subsystem sys) {
   switch (sys) {
   case CDH:
     return "CDH";
@@ -48,7 +48,9 @@ inline std::string subsystemName(const Subsystem sys) {
   }
 };
 
-inline Subsystem subsystemFromName(const std::string name) {
+Subsystem subsystem_from_name(const std::string name) {
+  if (name == "CDH")
+    return CDH;
   if (name == "PWR")
     return PWR;
   if (name == "IMU")
@@ -57,7 +59,7 @@ inline Subsystem subsystemFromName(const std::string name) {
     return HMI;
 };
 
-inline Subsystem subsystemFromID(const int id) {
+Subsystem subsystem_from_ID(const int id) {
   switch (id) {
   case 0:
     return CDH;

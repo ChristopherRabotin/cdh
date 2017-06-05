@@ -29,6 +29,26 @@ SCENARIO("Do that thing with the thing", "[Tags]") {
   }
 }
 
+SCENARIO("Check that subsystems are fully defined", "[bdd][cdh][subsystems]") {
+  GIVEN("The subsystem enum") {
+    using namespace cdh::subsystems;
+    WHEN("iterating over the enum") {
+      THEN("the symmetry in numbering should be correct") {
+        int subsys_id = CDH;
+        do {
+          std::cout << "checking subsys_id = " << subsys_id << std::endl;
+          REQUIRE(subsystem_from_ID(subsys_id) == subsys_id);
+          AND_THEN(
+              "it should also have a std::string name and can be reversed");
+          REQUIRE(subsystem_from_name(subsystem_name(
+                      subsystem_from_ID(subsys_id))) == subsys_id);
+          subsys_id++;
+        } while (subsys_id < HMI);
+      }
+    }
+  }
+}
+
 SCENARIO("Collecting mock telemetry", "[bdd][cdh][telemetry]") {
   cdh::telemetry::TMFrame test_frame = cdh::subsystems::collect_all_telemetry();
   std::cout << test_frame.SerializeAsString() << std::endl;

@@ -16,9 +16,9 @@ using namespace std::chrono;
 namespace cdh {
 namespace subsystems {
 cdh::telemetry::TMFrame collect_all_telemetry();
-std::string subsystemName(const Subsystem sys);
-Subsystem subsystemFromID(const int id);
-Subsystem subsystemFromName(const std::string name);
+std::string subsystem_name(const Subsystem sys);
+Subsystem subsystem_from_ID(const int id);
+Subsystem subsystem_from_name(const std::string name);
 };
 }
 #endif
