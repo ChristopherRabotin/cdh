@@ -4,7 +4,8 @@ package cdh.subsystems;
 // All this is just a demo, eventually these will be generated.
 // This demo is to check that my hunch is correct.
 enum Subsystem {
-  PWR = 0; // Power
-  IMU = 1; // IMU
-  HMI = 2; // Human machine interface (screens, LEDs)
+  CDH = 0; // CDH -- Reserved.
+  PWR = 1; // Power
+  IMU = 2; // IMU
+  HMI = 3; // Human machine interface (screens, LEDs)
 }
