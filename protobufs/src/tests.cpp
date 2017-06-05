@@ -91,33 +91,33 @@ SCENARIO("Mock telemetry", "[bdd][cdh][telemetry]") {
           AND_THEN("check the data case based on the mock TM ID");
           REQUIRE(this_tm.data_case() == tm_data_case.at(this_tm.id()));
           AND_THEN("check that the value is the expected one");
+          switch (this_tm.id()) {
+          case 0:
+            REQUIRE(this_tm.bool_value() == true);
+            break;
+          case 10:
+            REQUIRE(this_tm.double_value() == 3.141592653589793);
+            break;
+          case 20:
+            REQUIRE(this_tm.int_value() == -5000);
+            break;
+          case 30:
+            REQUIRE(this_tm.bytes_value() == subsystem_name(subsys));
+            break;
+          case 40:
+            break; // Nothing to check here, there is no data.
+          case 50:
+            REQUIRE(this_tm.bool_value() == false);
+            break;
+          default:
+            FAIL("unexpected TM_ID: " << this_tm.id());
+          }
           AND_THEN("repeat");
           INFO("TM_Frame: " << tm_frame << " SS: " << subsys
                             << " TM_ID:" << this_tm.id());
         }
         REQUIRE(tm_count[PWR] == tm_count[IMU]);
         REQUIRE(tm_count[HMI] == tm_count[IMU]);
-      }
-    }
-  }
-}
-
-SCENARIO("Test the telemetry", "[bdd][cdh][telemetry]") {
-  cdh::telemetry::Telemetry TMTest;
-  TMTest.set_id(0x10);
-  TMTest.set_bool_value(true);
-  cdh::telemetry::TMFrame Frame;
-  cdh::telemetry::Telemetry *tm0 = Frame.add_tm();
-  tm0 = &TMTest;
-  std::cout << "num TMs:" << Frame.tm_size() << std::endl;
-  std::cout << "Expected ID:" << TMTest.id() << std::endl;
-  std::cout << "ID of first TM:" << Frame.tm(0).id() << std::endl;
-  GIVEN("A new TM point") {
-    // make stuff exist
-    WHEN("I set its ID to 0x01 and its bool value to `true`") {
-      // do this
-      THEN("its bool value should be set to true") {
-        REQUIRE(TMTest.bool_value());
       }
     }
   }
