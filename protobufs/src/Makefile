@@ -10,4 +10,4 @@ protobufs:
 
 tests:
 	g++ -std=gnu++11 -DTEST_MOCK_TELEMETRY tests.cpp ./proto/*.pb.cc ./subsystems/*.cpp cdh.cpp checksum.cpp crc32.c -o tests `pkg-config --cflags --libs protobuf`
-	./tests && rm tests
+	./tests -s && rm tests

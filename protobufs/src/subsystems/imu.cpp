@@ -5,7 +5,7 @@ namespace subsystems {
 namespace imu {
 bool collect_telemetry(cdh::telemetry::TMFrame &frame) {
 #ifdef TEST_MOCK_TELEMETRY
-  for (int tmid = 0; tmid < 5; tmid++) {
+  for (int tmid = 0; tmid < 6; tmid++) {
     cdh::telemetry::Telemetry *tm = frame.add_tm();
     tm->set_id(tmid * 10);
     // Test the different types
@@ -14,13 +14,16 @@ bool collect_telemetry(cdh::telemetry::TMFrame &frame) {
       tm->set_bool_value(true);
       break;
     case 1:
-      tm->set_double_value(1e32);
+      tm->set_double_value(3.141592653589793);
       break;
     case 2:
-      tm->set_int_value(5000);
+      tm->set_int_value(-5000);
       break;
     case 3:
       tm->set_bytes_value(std::string{"IMU"});
+      break;
+    case 5:
+      tm->set_bool_value(false);
       break;
     }
     tm_chk(tm);

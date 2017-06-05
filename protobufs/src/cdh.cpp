@@ -24,8 +24,9 @@ cdh::telemetry::TMFrame collect_all_telemetry() {
   for (int i = 0; i < 3; ++i) {
     if (!funcs[i](frame)) {
       // TODO: A better error printing statement.
-      cout << "func call " << i << " (" << subsystem_name(subsystem_from_ID(i))
-           << ") returned FALSE" << endl;
+      cout << "func call " << i << " ("
+           << subsystem_name(subsystem_from_ID(i + 1)) << ") returned FALSE"
+           << endl;
     }
   }
   // Finalize the telemetry frame
