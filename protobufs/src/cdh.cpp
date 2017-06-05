@@ -7,16 +7,20 @@ typedef bool (*collect_telemetry_function)(cdh::telemetry::TMFrame &frame);
 namespace cdh {
 namespace subsystems {
 
-void collect_all_telemetry() {
+cdh::telemetry::TMFrame collect_all_telemetry() {
   // TODO: Move this out of the function.
   collect_telemetry_function funcs[] = {
       pwr::collect_telemetry, imu::collect_telemetry, hmi::collect_telemetry};
 
   cdh::telemetry::TMFrame frame;
   for (int i = 0; i < 3; ++i) {
-    cout << "func call " << i << " (" << subsystemName(subsystemFromID(i))
-         << ") returned " << funcs[i](frame) << endl;
+    if (!funcs[i](frame)) {
+      // TODO: A better error printing statement.
+      cout << "func call " << i << " (" << subsystemName(subsystemFromID(i))
+           << ") returned FALSE" << endl;
+    }
   }
+  return frame;
 };
 
 inline std::string subsystemName(const Subsystem sys) {
