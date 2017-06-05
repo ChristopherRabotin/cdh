@@ -10,7 +10,7 @@ namespace subsystems {
 void collect_all_telemetry() {
   // TODO: Move this out of the function.
   collect_telemetry_function funcs[] = {
-      imu::collect_telemetry, pwr::collect_telemetry, hmi::collect_telemetry};
+      pwr::collect_telemetry, imu::collect_telemetry, hmi::collect_telemetry};
 
   cdh::telemetry::TMFrame frame;
   for (int i = 0; i < 3; ++i) {
