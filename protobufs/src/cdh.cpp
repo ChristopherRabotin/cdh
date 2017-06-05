@@ -14,6 +14,13 @@ cdh::telemetry::TMFrame collect_all_telemetry() {
       pwr::collect_telemetry, imu::collect_telemetry, hmi::collect_telemetry};
 
   cdh::telemetry::TMFrame frame;
+  // Add the management TM point(s) first
+  // TM ID 01 -- Max TM frame sequence number
+  cdh::telemetry::Telemetry *tm = frame.add_tm();
+  tm->set_sys(CDH);
+  tm->set_id(0x01);
+  tm->set_int_value(UINT_MAX);
+  // Get the telemetry from all the subsystems
   for (int i = 0; i < 3; ++i) {
     if (!funcs[i](frame)) {
       // TODO: A better error printing statement.
@@ -21,12 +28,6 @@ cdh::telemetry::TMFrame collect_all_telemetry() {
            << ") returned FALSE" << endl;
     }
   }
-  // Add the management TM points
-  // TM ID 01 -- Max TM frame sequence number
-  cdh::telemetry::Telemetry *tm = frame.add_tm();
-  tm->set_sys(CDH);
-  tm->set_id(0x01);
-  tm->set_int_value(UINT_MAX);
   // Finalize the telemetry frame
   frame.set_sequence_no((seq_no++) % UINT_MAX);
   frame.set_timestamp(

@@ -11,23 +11,7 @@
 
 #include "./proto/telemetry.pb.h"
 #include "cdh.hpp"
-
-inline bool itDoesThis() { return true; }
-inline bool itDoesThat() { return true; }
-
-SCENARIO("Do that thing with the thing", "[Tags]") {
-  GIVEN("This stuff exists") {
-    // make stuff exist
-    WHEN("I do this") {
-      // do this
-      THEN("it should do this") {
-        REQUIRE(itDoesThis());
-        AND_THEN("do that")
-        REQUIRE(itDoesThat());
-      }
-    }
-  }
-}
+#include <stdint.h>
 
 SCENARIO("Check that subsystems are fully defined", "[bdd][cdh][subsystems]") {
   GIVEN("The subsystem enum") {
@@ -36,7 +20,7 @@ SCENARIO("Check that subsystems are fully defined", "[bdd][cdh][subsystems]") {
       THEN("the symmetry in numbering should be correct") {
         int subsys_id = CDH;
         do {
-          std::cout << "checking subsys_id = " << subsys_id << std::endl;
+          INFO("checking subsys_id = " << subsys_id << " out of " << HMI);
           REQUIRE(subsystem_from_ID(subsys_id) == subsys_id);
           AND_THEN(
               "it should also have a std::string name and can be reversed");
@@ -49,9 +33,26 @@ SCENARIO("Check that subsystems are fully defined", "[bdd][cdh][subsystems]") {
   }
 }
 
-SCENARIO("Collecting mock telemetry", "[bdd][cdh][telemetry]") {
-  cdh::telemetry::TMFrame test_frame = cdh::subsystems::collect_all_telemetry();
-  std::cout << test_frame.SerializeAsString() << std::endl;
+SCENARIO("Mock telemetry", "[bdd][cdh][telemetry]") {
+  GIVEN("Some mock telemetry collection,") {
+    WHEN("Collecting all telemetry,") {
+      cdh::telemetry::TMFrame frame = cdh::subsystems::collect_all_telemetry();
+      THEN("the first seq_no should be 0,") {
+        REQUIRE(frame.sequence_no() == 0);
+      }
+      THEN("the second seq_no should be 1,") {
+        REQUIRE(frame.sequence_no() == 1);
+      }
+      THEN("the first management telemetry point should be a valid CDH frame") {
+        cdh::telemetry::Telemetry cdh_mgmt = frame.tm(0);
+        REQUIRE(cdh_mgmt.sys() == cdh::subsystems::CDH);
+        AND_THEN("its ID should 0x01");
+        REQUIRE(cdh_mgmt.id() == 0x01);
+        AND_THEN("the max sequence number should be set to the limit of uint");
+        REQUIRE(cdh_mgmt.int_value() == UINT_MAX);
+      }
+    }
+  }
 }
 
 SCENARIO("Test the telemetry", "[bdd][cdh][telemetry]") {
