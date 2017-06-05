@@ -56,21 +56,40 @@ SCENARIO("Mock telemetry", "[bdd][cdh][telemetry]") {
         REQUIRE(cdh_mgmt.int_value() == UINT_MAX);
       }
       THEN("each subsystem should have the same mock telemetry points") {
+        // NOTE: Using `.at()` for the maps to throw an exception if unknown
+        // key.
         using namespace cdh::subsystems;
         std::map<Subsystem, char> tm_count;
         tm_count[PWR] = 0;
         tm_count[IMU] = 0;
         tm_count[HMI] = 0;
+        std::map<Subsystem, char> tm_id;
+        tm_id[PWR] = 0;
+        tm_id[IMU] = 0;
+        tm_id[HMI] = 0;
+        std::map<int, cdh::telemetry::Telemetry::DataCase> tm_data_case;
+        tm_data_case[0] = cdh::telemetry::Telemetry::DataCase::kBoolValue;
+        tm_data_case[10] = cdh::telemetry::Telemetry::DataCase::kDoubleValue;
+        tm_data_case[20] = cdh::telemetry::Telemetry::DataCase::kIntValue;
+        tm_data_case[30] = cdh::telemetry::Telemetry::DataCase::kBytesValue;
+        tm_data_case[40] = cdh::telemetry::Telemetry::DataCase::DATA_NOT_SET;
         for (int tm_frame = 1; tm_frame < frame.tm_size(); tm_frame++) {
           cdh::telemetry::Telemetry this_tm = frame.tm(tm_frame);
-          switch (Subsystem subsys = this_tm.sys()) {
+          Subsystem subsys = this_tm.sys();
+          switch (subsys) {
           case CDH:
             FAIL("only the first TM point should be from CDH");
             break;
           default:
-            tm_count[subsys]++;
+            tm_count.at(subsys)++;
           }
+          AND_THEN("check the increment in TM IDs");
+          REQUIRE(this_tm.id() == (tm_id.at(subsys)++) * 10);
+          AND_THEN("check the data case based on the mock TM ID");
+          REQUIRE(this_tm.data_case() == tm_data_case.at(this_tm.id()));
           AND_THEN("repeat");
+          std::cout << "TM_Frame" << tm_frame << " SS: " << subsys
+                    << " TM_ID:" << this_tm.id() << std::endl;
         }
         REQUIRE(tm_count[PWR] == tm_count[IMU]);
         REQUIRE(tm_count[HMI] == tm_count[IMU]);
