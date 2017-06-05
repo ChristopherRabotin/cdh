@@ -1,0 +1,2 @@
+proto/*.pb.cc
+proto/*.pb.h

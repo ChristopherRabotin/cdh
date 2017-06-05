@@ -1,0 +1,11 @@
+syntax = "proto3";
+package cdh.subsystems;
+
+// All this is just a demo, eventually these will be generated.
+// This demo is to check that my hunch is correct.
+enum Subsystem {
+  CDH = 0; // CDH -- Reserved.
+  PWR = 1; // Power
+  IMU = 2; // IMU
+  HMI = 3; // Human machine interface (screens, LEDs)
+}

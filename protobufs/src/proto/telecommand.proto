@@ -1,0 +1,24 @@
+syntax = "proto3";
+package cdh.telecommand;
+
+import "subsystems.proto";
+
+message Telecommand {
+  cdh.subsystems.Subsystem sys = 1;
+  uint32 ID = 2; // Should this have the subsystem ID? Maybe as an enum for ease of comparison?
+  oneof parameter {
+    bool bool_value = 3;
+    double double_value = 4;
+    int32 int_value = 5;
+    bytes bytes_value = 6;
+  }
+  uint32 exec_time = 7; // Computation timestamp, needed because collection for a full frame may be long
+  uint32 checksum = 8;
+}
+
+message TCFrame {
+  bytes signature = 1; // Signature of the sender.
+  uint32 timestamp = 2; // Sending timestamp
+  uint32 sequence_no = 3;
+  repeated Telecommand TC = 4;
+}
