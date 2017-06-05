@@ -31,9 +31,7 @@ cdh::telemetry::TMFrame collect_all_telemetry() {
   }
   // Finalize the telemetry frame
   frame.set_sequence_no((seq_no++) % UINT_MAX);
-  frame.set_timestamp(
-      duration_cast<milliseconds>(system_clock::now().time_since_epoch())
-          .count());
+  frame.set_timestamp(millis_since_epoch());
   return frame;
 };
 

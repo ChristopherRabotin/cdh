@@ -5,14 +5,14 @@ import "subsystems.proto";
 
 message Telemetry {
   cdh.subsystems.Subsystem sys = 1;
-  uint32 ID = 2; // Should this have the subsystem ID? Maybe as an enum for ease of comparison?
+  uint32 ID = 2;
   oneof data {
     bool bool_value = 3;
     double double_value = 4;
     int32 int_value = 5;
     bytes bytes_value = 6;
   }
-  uint32 timestamp = 7; // Computation timestamp, needed because collection for a full frame may be long
+  uint32 timestamp = 7; // Computation timestamp, in case collection for a full frame is long
   uint32 checksum = 8;
 }
 

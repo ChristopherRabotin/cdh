@@ -116,6 +116,7 @@ SCENARIO("Mock telemetry", "[bdd][cdh][telemetry]") {
           INFO("TM_Frame: " << tm_frame << " SS: " << subsys
                             << " TM_ID:" << this_tm.id());
         }
+        REQUIRE(tm_count[PWR] == 6);
         REQUIRE(tm_count[PWR] == tm_count[IMU]);
         REQUIRE(tm_count[HMI] == tm_count[IMU]);
       }

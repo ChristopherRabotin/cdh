@@ -7,11 +7,9 @@
 #include "./subsystems/imu.hpp"
 #include "./subsystems/pwr.hpp"
 #include "crc32.h"
-#include <chrono>
+#include "utils.hpp"
 #include <iostream>
 #include <stdint.h>
-
-using namespace std::chrono;
 
 namespace cdh {
 namespace subsystems {
