@@ -11,6 +11,7 @@
 
 #include "./proto/telemetry.pb.h"
 #include "cdh.hpp"
+#include <map>
 #include <stdint.h>
 
 SCENARIO("Check that subsystems are fully defined", "[bdd][cdh][subsystems]") {
@@ -48,8 +49,31 @@ SCENARIO("Mock telemetry", "[bdd][cdh][telemetry]") {
         REQUIRE(cdh_mgmt.sys() == cdh::subsystems::CDH);
         AND_THEN("its ID should 0x01");
         REQUIRE(cdh_mgmt.id() == 0x01);
+        AND_THEN("the case of the data should be int");
+        REQUIRE(cdh_mgmt.data_case() ==
+                cdh::telemetry::Telemetry::DataCase::kIntValue);
         AND_THEN("the max sequence number should be set to the limit of uint");
         REQUIRE(cdh_mgmt.int_value() == UINT_MAX);
+      }
+      THEN("each subsystem should have the same mock telemetry points") {
+        using namespace cdh::subsystems;
+        std::map<Subsystem, char> tm_count;
+        tm_count[PWR] = 0;
+        tm_count[IMU] = 0;
+        tm_count[HMI] = 0;
+        for (int tm_frame = 1; tm_frame < frame.tm_size(); tm_frame++) {
+          cdh::telemetry::Telemetry this_tm = frame.tm(tm_frame);
+          switch (Subsystem subsys = this_tm.sys()) {
+          case CDH:
+            FAIL("only the first TM point should be from CDH");
+            break;
+          default:
+            tm_count[subsys]++;
+          }
+          AND_THEN("repeat");
+        }
+        REQUIRE(tm_count[PWR] == tm_count[IMU]);
+        REQUIRE(tm_count[HMI] == tm_count[IMU]);
       }
     }
   }
