@@ -9,8 +9,8 @@
 #define CATCH_CONFIG_MAIN
 #include "catch.hpp"
 
-#include "./proto/telemetry.pb.h"
-#include "cdh.hpp"
+#include "../cdh.hpp"
+#include "../proto/telemetry.pb.h"
 #include <map>
 #include <stdint.h>
 

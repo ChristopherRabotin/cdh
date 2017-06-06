@@ -9,7 +9,7 @@ protobufs:
 	~/Workspace/protobuf-3.3.0/bin/protoc -Iproto proto/subsystems.proto --cpp_out=proto
 
 tmtest:
-	g++ -std=gnu++11 -DTEST_MOCK_TELEMETRY tmtest.cpp ./proto/*.pb.cc ./subsystems/*.cpp cdh.cpp utils.cpp crc32.c -o tmtest `pkg-config --cflags --libs protobuf`
+	g++ -std=gnu++11 -DTEST_MOCK_TELEMETRY tests/tmtest.cpp ./proto/*.pb.cc ./subsystems/*.cpp cdh.cpp utils.cpp crc32.c -o tmtest `pkg-config --cflags --libs protobuf`
 	./tmtest -s && rm tmtest
 
 tctest:
