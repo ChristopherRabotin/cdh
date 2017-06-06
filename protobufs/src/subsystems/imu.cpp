@@ -142,7 +142,7 @@ bool process_telecommand(cdh::telecommand::Telecommand tc) {
     break;
   default:
     std::cout << "*warning:* unknown TC_ID " << tc.id() << " for subsys IMU"
-              << endl;
+              << std::endl;
     return false;
   }
   return true;

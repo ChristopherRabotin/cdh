@@ -13,5 +13,5 @@ tmtest:
 	./tmtest -s && rm tmtest
 
 tctest:
-	g++ -std=gnu++11 -DTEST_MOCK_TELECOMMAND tctest.cpp ./proto/*.pb.cc ./subsystems/*.cpp cdh.cpp utils.cpp crc32.c -o tctest `pkg-config --cflags --libs protobuf`
+	g++ -std=gnu++11 -DTEST_MOCK_TELECOMMAND tests/tctest.cpp ./proto/*.pb.cc ./subsystems/*.cpp cdh.cpp utils.cpp crc32.c -o tctest `pkg-config --cflags --libs protobuf`
 	./tctest -s && rm tctest

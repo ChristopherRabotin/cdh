@@ -5,6 +5,10 @@
 #include "../proto/telemetry.pb.h"
 #include "../utils.hpp"
 
+#ifdef TEST_MOCK_TELECOMMAND
+#include <iostream>
+#endif
+
 namespace cdh {
 namespace subsystems {
 namespace imu {
