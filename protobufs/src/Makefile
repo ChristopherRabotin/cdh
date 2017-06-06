@@ -10,8 +10,8 @@ protobufs:
 
 tmtest:
 	g++ -std=gnu++11 -DTEST_MOCK_TELEMETRY tests/tmtest.cpp ./proto/*.pb.cc ./subsystems/*.cpp cdh.cpp utils.cpp crc32.c -o tmtest `pkg-config --cflags --libs protobuf`
-	./tmtest -s && rm tmtest
+	./tmtest && rm tmtest
 
 tctest:
 	g++ -std=gnu++11 -DTEST_MOCK_TELECOMMAND tests/tctest.cpp ./proto/*.pb.cc ./subsystems/*.cpp cdh.cpp utils.cpp crc32.c -o tctest `pkg-config --cflags --libs protobuf`
-	./tctest -s && rm tctest
+	./tctest && rm tctest

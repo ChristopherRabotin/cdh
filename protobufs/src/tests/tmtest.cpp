@@ -71,11 +71,14 @@ SCENARIO("Mock telemetry", "[bdd][cdh][telemetry]") {
         for (int tm_frame = 1; tm_frame < frame.tm_size(); tm_frame++) {
           cdh::telemetry::Telemetry this_tm = frame.tm(tm_frame);
           Subsystem subsys = this_tm.sys();
-          switch (subsys) {
-          case CDH:
-            FAIL("only the first TM point should be from CDH");
-            break;
-          default:
+          if (subsys == CDH) {
+            if (this_tm.data_case() ==
+                cdh::telemetry::Telemetry::DataCase::kBoolValue) {
+              REQUIRE(!this_tm.bool_value());
+            }
+            AND_THEN("continue checking the other kind of TM");
+            continue;
+          } else {
             tm_count.at(subsys)++;
           }
           AND_THEN("check the increment in TM IDs");

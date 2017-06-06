@@ -9,6 +9,12 @@ namespace subsystems {
 uint tm_seq_no = 0;
 uint tc_seq_no = 0;
 uint exec_now_timestamp = UINT_MAX;
+bool err_tc_seq_no = false;
+uint err_tc_seq_no_skipped = 0;
+bool err_tc_timestamp = false;
+bool err_tm_collection_pwr = false;
+bool err_tm_collection_imu = false;
+bool err_tm_collection_hmi = false;
 
 cdh::telemetry::TMFrame collect_all_telemetry() {
   // To ensure that each subsystem is called in the same order and to avoid code
@@ -16,6 +22,8 @@ cdh::telemetry::TMFrame collect_all_telemetry() {
   // TODO: Move this out of the function.
   collect_telemetry_function funcs[] = {
       pwr::collect_telemetry, imu::collect_telemetry, hmi::collect_telemetry};
+  bool *err_tm_collection[] = {&err_tm_collection_pwr, &err_tm_collection_imu,
+                               &err_tm_collection_hmi};
 
   cdh::telemetry::TMFrame frame;
   // Add the management TM point(s) first
@@ -31,7 +39,37 @@ cdh::telemetry::TMFrame collect_all_telemetry() {
       cout << "*warning:* func call " << i << " ("
            << subsystem_name(subsystem_from_ID(i + 1)) << ") returned FALSE"
            << endl;
+      *err_tm_collection[i] = true;
     }
+  }
+  // TM IDs 100: CDH errors
+  {
+    // TM ID 101 -- previous TC sequence number error
+    cdh::telemetry::Telemetry *tm = frame.add_tm();
+    tm->set_sys(CDH);
+    tm->set_id(101);
+    tm->set_bool_value(err_tc_seq_no);
+    err_tc_seq_no = false; // Reset value
+  }
+  { // TM ID 102 -- previous TC sequences skipped
+    cdh::telemetry::Telemetry *tm = frame.add_tm();
+    tm->set_sys(CDH);
+    tm->set_id(102);
+    tm->set_int_value(err_tc_seq_no_skipped);
+    err_tc_seq_no_skipped = 0; // Reset value
+  }
+  { // TM ID 103 -- previous TC timestamp error
+    cdh::telemetry::Telemetry *tm = frame.add_tm();
+    tm->set_sys(CDH);
+    tm->set_id(111);
+    tm->set_bool_value(err_tc_timestamp);
+    err_tc_timestamp = false; // Reset value
+  }
+  for (int i = 0; i < 3; ++i) {
+    cdh::telemetry::Telemetry *tm = frame.add_tm();
+    tm->set_sys(CDH);
+    tm->set_id(121 + i);
+    tm->set_bool_value(*err_tm_collection[i]);
   }
   // Finalize the telemetry frame
   frame.set_sequence_no((tm_seq_no++) % UINT_MAX);
@@ -44,18 +82,21 @@ void process_all_telecommands(cdh::telecommand::TCFrame frame) {
   // Check the timestamp is in sync
   if (frame.timestamp() > millis_since_epoch()) {
     cout << "*warning:* received a TC sent in the future" << endl;
+    err_tc_timestamp = true;
   }
   if ((uint)frame.sequence_no() != tc_seq_no + 1) {
+    err_tc_seq_no = true;
     if (tc_seq_no == 0) {
-      cout
-          << "*warning:* CDH seems to have been reset, updating tc_seq_no with "
-             "ground data"
-          << endl;
+      cout << "*warning:* CDH seems to have been reset, updating tc_seq_no "
+              "with "
+              "ground data"
+           << endl;
     } else {
       // TODO: Buffer the missing sequences up to a set threshold in case they
       // arrive out of order and then execute them in order. This can be done
       // with a simple array.
-      cout << "*warning:* missing " << (uint)frame.sequence_no() - tc_seq_no + 1
+      err_tc_seq_no_skipped = (uint)frame.sequence_no() - tc_seq_no + 1;
+      cout << "*warning:* missing " << err_tc_seq_no_skipped
            << " TC sequences, updating tc_seq_no with "
               "ground data"
            << endl;
@@ -63,7 +104,8 @@ void process_all_telecommands(cdh::telecommand::TCFrame frame) {
     tc_seq_no = (uint)frame.sequence_no();
   }
   // TODO: Check signature.
-  // Read through each TC in the frame and execute them in the requested order.
+  // Read through each TC in the frame and execute them in the requested
+  // order.
   // XXX: In Zephyr, this needs to use the scheduler in order to execute all
   // the TCs in the buffer (almost) exactly at the right time. This probably
   // means this whole chunk will be rewritten. Currently the execution time is
