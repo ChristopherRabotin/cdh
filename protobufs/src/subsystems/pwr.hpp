@@ -1,6 +1,7 @@
 #ifndef PWR_HPP_INCLUDED
 #define PWR_HPP_INCLUDED
 
+#include "../proto/telecommand.pb.h"
 #include "../proto/telemetry.pb.h"
 #include "../utils.hpp"
 

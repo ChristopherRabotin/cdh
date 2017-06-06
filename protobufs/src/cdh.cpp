@@ -69,31 +69,45 @@ void process_all_telecommands(cdh::telecommand::TCFrame frame) {
   // means this whole chunk will be rewritten. Currently the execution time is
   // ignored and a warning is printed if the exec_time is not "NOW".
   for (int tc_frame = 0; tc_frame < frame.tc_size(); tc_frame++) {
-    cdh::telecommand::Telecommand this_tc = frame.tc(tc_frame);
-    if (this_tc.exec_time() != exec_now_timestamp) {
+    cdh::telecommand::Telecommand tc = frame.tc(tc_frame);
+    if (tc.exec_time() != exec_now_timestamp) {
       cout << "*warning:*: exec_time currently unsupported" << endl;
     }
+    // Verify the checksum.
+    uint recv_crc = tc.checksum();
+    // Checksum is computed with that field set to its default value.
+    tc.set_checksum(0);
+    uint computed_crc = compute_crc32(tc.SerializeAsString());
+    if (computed_crc != recv_crc) {
+      cout << "*warning:* TC_ID " << tc.id() << " for subsys "
+           << subsystem_name(tc.sys())
+           << " has an incorrect checksum\nrecv:" << recv_crc
+           << "\ncomp: " << computed_crc << endl;
+      continue;
+    }
     bool success = false;
-    switch (this_tc.sys()) {
+    switch (tc.sys()) {
     case CDH:
-      success = process_telecommand(this_tc);
+      success = process_telecommand(tc);
       break;
     case PWR:
-      success = pwr::process_telecommand(this_tc);
+      success = pwr::process_telecommand(tc);
       break;
     case IMU:
-      success = imu::process_telecommand(this_tc);
+      success = imu::process_telecommand(tc);
       break;
     case HMI:
-      success = hmi::process_telecommand(this_tc);
+      success = hmi::process_telecommand(tc);
       break;
     }
     if (!success) {
-      cout << "*warning:* executing TC_ID " << this_tc.id() << " on subsys "
-           << subsystem_name(this_tc.sys()) << " failed" << endl;
+      cout << "*warning:* executing TC_ID " << tc.id() << " on subsys "
+           << subsystem_name(tc.sys()) << " failed" << endl;
     }
   }
 };
+
+bool process_telecommand(cdh::telecommand::Telecommand tc) { return false; }
 
 std::string subsystem_name(const Subsystem sys) {
   switch (sys) {

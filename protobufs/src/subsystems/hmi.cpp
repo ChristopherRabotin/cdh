@@ -33,6 +33,7 @@ bool collect_telemetry(cdh::telemetry::TMFrame &frame) {
   return false;
 #endif
 };
+bool process_telecommand(cdh::telecommand::Telecommand tc) { return false; }
 }
 }
 };

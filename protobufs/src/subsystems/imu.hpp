@@ -1,6 +1,7 @@
 #ifndef IMU_HPP_INCLUDED
 #define IMU_HPP_INCLUDED
 
+#include "../proto/telecommand.pb.h"
 #include "../proto/telemetry.pb.h"
 #include "../utils.hpp"
 

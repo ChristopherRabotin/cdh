@@ -1,6 +1,7 @@
 #ifndef HMI_HPP_INCLUDED
 #define HMI_HPP_INCLUDED
 
+#include "../proto/telecommand.pb.h"
 #include "../proto/telemetry.pb.h"
 #include "../utils.hpp"
 namespace cdh {
