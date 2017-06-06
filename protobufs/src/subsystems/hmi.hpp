@@ -7,6 +7,7 @@ namespace cdh {
 namespace subsystems {
 namespace hmi {
 bool collect_telemetry(cdh::telemetry::TMFrame &frame);
+bool process_telecommand(cdh::telecommand::Telecommand tc);
 inline void tm_chk(cdh::telemetry::Telemetry *tm) {
   tm->set_sys(HMI);
   tm->set_checksum(compute_crc32(tm->SerializeAsString()));

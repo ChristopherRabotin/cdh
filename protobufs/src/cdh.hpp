@@ -2,6 +2,7 @@
 #define CDH_HPP_INCLUDED
 
 #include "./proto/subsystems.pb.h"
+#include "./proto/telecommand.pb.h"
 #include "./proto/telemetry.pb.h"
 #include "./subsystems/hmi.hpp"
 #include "./subsystems/imu.hpp"
@@ -14,6 +15,8 @@
 namespace cdh {
 namespace subsystems {
 cdh::telemetry::TMFrame collect_all_telemetry();
+void process_all_telecommands(cdh::telecommand::TCFrame);
+bool process_telecommand(cdh::telecommand::Telecommand tc); // CDH commands
 std::string subsystem_name(const Subsystem sys);
 Subsystem subsystem_from_ID(const int id);
 Subsystem subsystem_from_name(const std::string name);
