@@ -42,6 +42,7 @@ cdh::telemetry::TMFrame collect_all_telemetry() {
       *err_tm_collection[i] = true;
     }
   }
+  // XXX: Not sure that creating a scope for each is a great idea.
   // TM IDs 100: CDH errors
   {
     // TM ID 101 -- previous TC sequence number error
@@ -58,13 +59,14 @@ cdh::telemetry::TMFrame collect_all_telemetry() {
     tm->set_int_value(err_tc_seq_no_skipped);
     err_tc_seq_no_skipped = 0; // Reset value
   }
-  { // TM ID 103 -- previous TC timestamp error
+  { // TM ID 111 -- previous TC timestamp error
     cdh::telemetry::Telemetry *tm = frame.add_tm();
     tm->set_sys(CDH);
     tm->set_id(111);
     tm->set_bool_value(err_tc_timestamp);
     err_tc_timestamp = false; // Reset value
   }
+  // TM IDs 121+ are for collection errors of different subsystems.
   for (int i = 0; i < 3; ++i) {
     cdh::telemetry::Telemetry *tm = frame.add_tm();
     tm->set_sys(CDH);
@@ -84,7 +86,7 @@ void process_all_telecommands(cdh::telecommand::TCFrame frame) {
     cout << "*warning:* received a TC sent in the future" << endl;
     err_tc_timestamp = true;
   }
-  if ((uint)frame.sequence_no() != tc_seq_no + 1) {
+  if ((uint)frame.sequence_no() != tc_seq_no) {
     err_tc_seq_no = true;
     if (tc_seq_no == 0) {
       cout << "*warning:* CDH seems to have been reset, updating tc_seq_no "
@@ -95,13 +97,15 @@ void process_all_telecommands(cdh::telecommand::TCFrame frame) {
       // TODO: Buffer the missing sequences up to a set threshold in case they
       // arrive out of order and then execute them in order. This can be done
       // with a simple array.
-      err_tc_seq_no_skipped = (uint)frame.sequence_no() - tc_seq_no + 1;
+      err_tc_seq_no_skipped = (uint)frame.sequence_no() - tc_seq_no;
       cout << "*warning:* missing " << err_tc_seq_no_skipped
            << " TC sequences, updating tc_seq_no with "
               "ground data"
            << endl;
     }
-    tc_seq_no = (uint)frame.sequence_no();
+    tc_seq_no = (uint)frame.sequence_no() + 1;
+  } else {
+    tc_seq_no++;
   }
   // TODO: Check signature.
   // Read through each TC in the frame and execute them in the requested
