@@ -194,7 +194,32 @@ SCENARIO("Mock telecommand", "[bdd][cdh][telecommand]") {
         // Read all telemetry and check that the error TMs are set.
         cdh::telemetry::TMFrame all_tm =
             cdh::subsystems::collect_all_telemetry();
-        // TODO: Read the TM and ensure the values are those expected.
+        for (int i = 0; i < all_tm.tm_size(); i++) {
+          cdh::telemetry::Telemetry tm = all_tm.tm(i);
+          if (tm.sys() == cdh::subsystems::Subsystem::IMU) {
+            switch (tm.id()) {
+            case 0:
+              REQUIRE(tm.bool_value() == false);
+              break;
+            case 10:
+              REQUIRE(tm.double_value() == 3.0879);
+              break;
+            case 20:
+              REQUIRE(tm.int_value() == 1);
+              break;
+            case 30:
+              REQUIRE(tm.bytes_value() == std::string{"light"});
+              break;
+            case 40:
+              break; // Nothing to check here, there is no data.
+            case 50:
+              REQUIRE(tm.int_value() == 2);
+              break;
+            default:
+              FAIL("unexpected TM_ID: " << tm.id());
+            }
+          }
+        }
       }
     }
   }
