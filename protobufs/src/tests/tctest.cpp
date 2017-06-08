@@ -220,6 +220,72 @@ SCENARIO("Mock telecommand", "[bdd][cdh][telecommand]") {
             }
           }
         }
+        // Test setting values for other TCs (i.e. not bytes, since already
+        // tested).
+        frame.set_timestamp(millis_since_epoch());
+        frame.set_sequence_no(5);
+        // Add some IMU TCs
+        // START: Test bool values
+        {
+          cdh::telecommand::Telecommand *tc = frame.add_tc();
+          tc->set_sys(cdh::subsystems::Subsystem::IMU);
+          tc->set_id(3);
+          tc->set_bool_value(true);
+          tc->set_exec_time(-1);
+          tc->set_checksum(compute_crc32(tc->SerializeAsString()));
+        }
+        {
+          cdh::telecommand::Telecommand *tc = frame.add_tc();
+          tc->set_sys(cdh::subsystems::Subsystem::IMU);
+          tc->set_id(16);
+          tc->set_double_value(3.1415);
+          tc->set_exec_time(-1);
+          tc->set_checksum(compute_crc32(tc->SerializeAsString()));
+        }
+        {
+          cdh::telecommand::Telecommand *tc = frame.add_tc();
+          tc->set_sys(cdh::subsystems::Subsystem::IMU);
+          tc->set_id(26);
+          tc->set_int_value(-502012);
+          tc->set_exec_time(-1);
+          tc->set_checksum(compute_crc32(tc->SerializeAsString()));
+        }
+        {
+          cdh::telecommand::Telecommand *tc = frame.add_tc();
+          tc->set_sys(cdh::subsystems::Subsystem::IMU);
+          tc->set_id(36);
+          tc->set_int_value(2018);
+          tc->set_exec_time(-1);
+          tc->set_checksum(compute_crc32(tc->SerializeAsString()));
+        }
+        cdh::subsystems::process_all_telecommands(frame);
+        // Read all telemetry and check that the error TMs are set.
+        all_tm = cdh::subsystems::collect_all_telemetry();
+        for (int i = 0; i < all_tm.tm_size(); i++) {
+          cdh::telemetry::Telemetry tm = all_tm.tm(i);
+          if (tm.sys() == cdh::subsystems::Subsystem::IMU) {
+            switch (tm.id()) {
+            case 0:
+              REQUIRE(tm.bool_value() == true);
+              break;
+            case 10:
+              REQUIRE(tm.double_value() == 3.1415);
+              break;
+            case 20:
+              REQUIRE(tm.int_value() == -502012);
+              break;
+            case 30:
+              break;
+            case 40:
+              break; // Nothing to check here, there is no data.
+            case 50:
+              REQUIRE((uint)tm.int_value() == 2018);
+              break;
+            default:
+              FAIL("unexpected TM_ID: " << tm.id());
+            }
+          }
+        }
       }
     }
   }
