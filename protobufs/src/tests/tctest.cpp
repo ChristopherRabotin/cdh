@@ -63,6 +63,139 @@ SCENARIO("Mock telecommand", "[bdd][cdh][telecommand]") {
           }
         }
       }
+      THEN("trying out the IMU demo logic and sequentiality") {
+        frame.set_timestamp(millis_since_epoch());
+        frame.set_sequence_no(4);
+        // Add some IMU TCs
+        // START: Test bool values
+        {
+          cdh::telecommand::Telecommand *tc = frame.add_tc();
+          tc->set_sys(cdh::subsystems::Subsystem::IMU);
+          tc->set_id(1);
+          tc->set_exec_time(-1);
+          tc->set_checksum(compute_crc32(tc->SerializeAsString()));
+        }
+        {
+          cdh::telecommand::Telecommand *tc = frame.add_tc();
+          tc->set_sys(cdh::subsystems::Subsystem::IMU);
+          tc->set_id(1);
+          tc->set_exec_time(-1);
+          tc->set_checksum(compute_crc32(tc->SerializeAsString()));
+        }
+        {
+          cdh::telecommand::Telecommand *tc = frame.add_tc();
+          tc->set_sys(cdh::subsystems::Subsystem::IMU);
+          tc->set_id(1);
+          tc->set_exec_time(-1);
+          tc->set_checksum(compute_crc32(tc->SerializeAsString()));
+        }
+        // END: Test bool values -- should now be `false`
+        // START: Test double values
+        {
+          cdh::telecommand::Telecommand *tc = frame.add_tc();
+          tc->set_sys(cdh::subsystems::Subsystem::IMU);
+          tc->set_id(12);
+          tc->set_exec_time(-1);
+          tc->set_checksum(compute_crc32(tc->SerializeAsString()));
+        }
+        {
+          cdh::telecommand::Telecommand *tc = frame.add_tc();
+          tc->set_sys(cdh::subsystems::Subsystem::IMU);
+          tc->set_id(12);
+          tc->set_exec_time(-1);
+          tc->set_checksum(compute_crc32(tc->SerializeAsString()));
+        }
+        {
+          cdh::telecommand::Telecommand *tc = frame.add_tc();
+          tc->set_sys(cdh::subsystems::Subsystem::IMU);
+          tc->set_id(14);
+          tc->set_exec_time(-1);
+          tc->set_checksum(compute_crc32(tc->SerializeAsString()));
+        }
+        // END: Test double values -- should now be `3.0879`
+        // START: Test int values
+        {
+          cdh::telecommand::Telecommand *tc = frame.add_tc();
+          tc->set_sys(cdh::subsystems::Subsystem::IMU);
+          tc->set_id(22);
+          tc->set_exec_time(-1);
+          tc->set_checksum(compute_crc32(tc->SerializeAsString()));
+        }
+        {
+          cdh::telecommand::Telecommand *tc = frame.add_tc();
+          tc->set_sys(cdh::subsystems::Subsystem::IMU);
+          tc->set_id(22);
+          tc->set_exec_time(-1);
+          tc->set_checksum(compute_crc32(tc->SerializeAsString()));
+        }
+        {
+          cdh::telecommand::Telecommand *tc = frame.add_tc();
+          tc->set_sys(cdh::subsystems::Subsystem::IMU);
+          tc->set_id(22);
+          tc->set_exec_time(-1);
+          tc->set_checksum(compute_crc32(tc->SerializeAsString()));
+        }
+        {
+          cdh::telecommand::Telecommand *tc = frame.add_tc();
+          tc->set_sys(cdh::subsystems::Subsystem::IMU);
+          tc->set_id(24);
+          tc->set_exec_time(-1);
+          tc->set_checksum(compute_crc32(tc->SerializeAsString()));
+        }
+        // END: Test int values -- should now be `1`
+        // START: Test uint values
+        {
+          cdh::telecommand::Telecommand *tc = frame.add_tc();
+          tc->set_sys(cdh::subsystems::Subsystem::IMU);
+          tc->set_id(32);
+          tc->set_exec_time(-1);
+          tc->set_checksum(compute_crc32(tc->SerializeAsString()));
+        }
+        {
+          cdh::telecommand::Telecommand *tc = frame.add_tc();
+          tc->set_sys(cdh::subsystems::Subsystem::IMU);
+          tc->set_id(32);
+          tc->set_exec_time(-1);
+          tc->set_checksum(compute_crc32(tc->SerializeAsString()));
+        }
+        {
+          cdh::telecommand::Telecommand *tc = frame.add_tc();
+          tc->set_sys(cdh::subsystems::Subsystem::IMU);
+          tc->set_id(34);
+          tc->set_exec_time(-1);
+          tc->set_checksum(compute_crc32(tc->SerializeAsString()));
+        }
+        {
+          cdh::telecommand::Telecommand *tc = frame.add_tc();
+          tc->set_sys(cdh::subsystems::Subsystem::IMU);
+          tc->set_id(32);
+          tc->set_exec_time(-1);
+          tc->set_checksum(compute_crc32(tc->SerializeAsString()));
+        }
+        {
+          cdh::telecommand::Telecommand *tc = frame.add_tc();
+          tc->set_sys(cdh::subsystems::Subsystem::IMU);
+          tc->set_id(32);
+          tc->set_exec_time(-1);
+          tc->set_checksum(compute_crc32(tc->SerializeAsString()));
+        }
+        // END: Test uint values -- should now be `2`
+        // START: Test bytes values
+        {
+          cdh::telecommand::Telecommand *tc = frame.add_tc();
+          tc->set_sys(cdh::subsystems::Subsystem::IMU);
+          tc->set_id(42);
+          tc->set_exec_time(-1);
+          tc->set_bytes_value(std::string{"light"});
+          tc->set_checksum(compute_crc32(tc->SerializeAsString()));
+        }
+        // END: Test bytes values -- should now be `light`
+        cdh::subsystems::process_all_telecommands(frame);
+        // Read all telemetry and check that the error TMs are set.
+        cdh::telemetry::TMFrame all_tm =
+            cdh::subsystems::collect_all_telemetry();
+        // TODO: Read the TM and ensure the values are those expected.
+      }
     }
   }
 }

@@ -129,6 +129,11 @@ void process_all_telecommands(cdh::telecommand::TCFrame frame) {
            << subsystem_name(tc.sys())
            << " has an incorrect checksum\nrecv:" << recv_crc
            << "\ncomp: " << computed_crc << endl;
+      // TODO: Set CDH TC error flag -- don't know how to handle this correctly
+      // though. It would have to be in the TM stream, but how to handle several
+      // errors? Should there just be a general error code and a TC to receive
+      // all the errors in a given time? Moreover, I could use simple logic for
+      // this similar to the one I had at the Blue interview.
       continue;
     }
     bool success = false;
