@@ -12,7 +12,7 @@ message Telecommand {
     int32 int_value = 5;
     bytes bytes_value = 6;
   }
-  uint32 exec_time = 7; // Computation timestamp, needed because collection for a full frame may be long
+  uint32 exec_time = 7; // Time at which this should be executed, or UINT_MAX for *now*
   uint32 checksum = 8;
 }
 

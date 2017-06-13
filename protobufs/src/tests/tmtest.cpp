@@ -1,16 +1,8 @@
-/*
- *  Created by Phil on 29/11/2010.
- *  Copyright 2010 Two Blue Cubes Ltd. All rights reserved.
- *
- *  Distributed under the Boost Software License, Version 1.0. (See accompanying
- *  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
- */
-
 #define CATCH_CONFIG_MAIN
 #include "catch.hpp"
 
-#include "./proto/telemetry.pb.h"
-#include "cdh.hpp"
+#include "../cdh.hpp"
+#include "../proto/telemetry.pb.h"
 #include <map>
 #include <stdint.h>
 
@@ -79,11 +71,14 @@ SCENARIO("Mock telemetry", "[bdd][cdh][telemetry]") {
         for (int tm_frame = 1; tm_frame < frame.tm_size(); tm_frame++) {
           cdh::telemetry::Telemetry this_tm = frame.tm(tm_frame);
           Subsystem subsys = this_tm.sys();
-          switch (subsys) {
-          case CDH:
-            FAIL("only the first TM point should be from CDH");
-            break;
-          default:
+          if (subsys == CDH) {
+            if (this_tm.data_case() ==
+                cdh::telemetry::Telemetry::DataCase::kBoolValue) {
+              REQUIRE(!this_tm.bool_value());
+            }
+            AND_THEN("continue checking the other kind of TM");
+            continue;
+          } else {
             tm_count.at(subsys)++;
           }
           AND_THEN("check the increment in TM IDs");
