@@ -218,6 +218,15 @@ SCENARIO("Mock telecommand", "[bdd][cdh][telecommand]") {
             default:
               FAIL("unexpected TM_ID: " << tm.id());
             }
+          } else if (tm.sys() == cdh::subsystems::Subsystem::CDH) {
+            // Check that only the IMU subsystem returns a valid
+            if (tm.id() == 121) {
+              INFO("TM CDH 121 should be true (PWR TM collection failed)");
+              REQUIRE(tm.bool_value() == true);
+            } else if (tm.id() == 123) {
+              INFO("TM CDH 123 should be true (HMI TM collection failed)");
+              REQUIRE(tm.bool_value() == true);
+            }
           }
         }
         // Test setting values for other TCs (i.e. not bytes, since already
